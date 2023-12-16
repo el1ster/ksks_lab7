@@ -4,6 +4,7 @@ import threading
 import time
 from PIL import Image, ImageTk
 from tkinter import PhotoImage
+import random
 
 sprites = {}
 
@@ -132,8 +133,16 @@ def receive_data():
         draw_text(200, 50, "black", 14, len(size), size)
 
     def load_sprite(index, width, height, data):
-        image = tk.PhotoImage(width=width, height=height)
-        image.put(data, to=(0, 0, width - 1, height - 1))
+        if isinstance(data, str):
+            try:
+                image = Image.open(data)
+                image = ImageTk.PhotoImage(image.resize((width, height)))
+            except FileNotFoundError:
+                image = tk.PhotoImage(width=width, height=height)
+                image.put(data, to=(0, 0, width - 1, height - 1))
+        else:
+            image = ImageTk.PhotoImage(data.resize((width, height)))
+
         sprites[index] = image
 
     def show_sprite(index, x, y):
